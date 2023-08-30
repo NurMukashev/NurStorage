@@ -25,6 +25,8 @@ Route::get('/', function () {
     ]);
 });
 
+Route::resource('documents', \App\Http\Controllers\DocumentController::class);
+
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
