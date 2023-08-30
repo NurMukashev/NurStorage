@@ -12,7 +12,7 @@ class DocumentController extends Controller
      */
     public function index()
     {
-        //
+        return inertia('Documents/Index');
     }
 
     /**
@@ -20,7 +20,7 @@ class DocumentController extends Controller
      */
     public function create()
     {
-        //
+        return inertia('Documents/Create');
     }
 
     /**
