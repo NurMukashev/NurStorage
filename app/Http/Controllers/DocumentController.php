@@ -29,7 +29,15 @@ class DocumentController extends Controller
      */
     public function store(DocumentRequest $request)
     {
-        dd('Ответ: '.$request);
+        $file = $request->file('file');
+        $path = $file->store('documents');
+        //$path = $file->storeAs('documents', $file->getClientOriginalName());
+        Document::create([
+            'name' => $request->name,
+            'file' => $path
+        ]);
+
+        return true;
     }
 
     /**
