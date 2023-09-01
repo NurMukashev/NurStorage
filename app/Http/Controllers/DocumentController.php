@@ -13,7 +13,9 @@ class DocumentController extends Controller
      */
     public function index()
     {
-        return inertia('Documents/Index');
+        $documents = Document::all();
+
+        return inertia('Documents/Index', compact('documents'));
     }
 
     /**
