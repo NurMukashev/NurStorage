@@ -24,7 +24,7 @@ class DocumentRequest extends FormRequest
         return [
 
             'name' => 'required',
-            'file' => 'required|max:8000'
+            'file' => 'required|max:8192'
 
         ];
     }
