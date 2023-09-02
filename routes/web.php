@@ -26,6 +26,7 @@ Route::get('/', function () {
 });
 
 Route::resource('documents', \App\Http\Controllers\DocumentController::class);
+Route::get('download/{id}', [\App\Http\Controllers\DownloadController::class, 'download'])->name('download');
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');

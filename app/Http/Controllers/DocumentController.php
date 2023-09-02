@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\DocumentRequest;
 use App\Models\Document;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class DocumentController extends Controller
 {
@@ -71,6 +72,14 @@ class DocumentController extends Controller
      */
     public function destroy(Document $document)
     {
-        //
+        if(Storage::disk('public')->delete($download->path)){
+
+            return redirect()->route('documents.index')->with('message', 'Документ удален');
+
+        }else{
+
+            return redirect()->route('documents.index')->with('message', 'Документ не может быть удален');
+
+        }
     }
 }

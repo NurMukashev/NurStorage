@@ -32,6 +32,7 @@
                 <td class="border border-gray-300 px-6 py-4">
                     <Link :href="route('documents.edit', document.id)" class="mx-1 px-3 py-2 bg-orange-500 hover:bg-orange-700 cursor-pointer text-md" >Изменить</Link>
                     <Link :href="route('documents.destroy', document.id)" class="mx-1 px-3 py-2 bg-red-500 hover:bg-red-700 cursor-pointer text-md" >Удалить</Link>
+                    <a :href="'download/'+ document.id" class="mx-1 px-3 py-2 bg-red-500 hover:bg-red-700 cursor-pointer text-md">Скачать</a>
                 </td>
             </tr>
             </tbody>
