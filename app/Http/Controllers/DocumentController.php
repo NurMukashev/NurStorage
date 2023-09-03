@@ -33,14 +33,20 @@ class DocumentController extends Controller
     public function store(DocumentRequest $request)
     {
         $file = $request->file('file');
+        $file_name = $file->getClientOriginalName();
+        $extension = $file->getClientOriginalExtension();
+        $size = $file->getSize();
         $path = $file->store('documents');
-        //$path = $file->storeAs('documents', $file->getClientOriginalName());
+
         Document::create([
             'name' => $request->name,
-            'file' => $path
+            'file' => $path,
+            'file_name' => $file_name,
+            'extension' => $extension,
+            'size' => $size
         ]);
 
-        return true;
+        return redirect()->route('documents.index')->with('message', "Документ добавлен");
     }
 
     /**
@@ -56,7 +62,8 @@ class DocumentController extends Controller
      */
     public function edit(Document $document)
     {
-        //
+        $document_edit = $document; //Неудачно назвал модель, не могу применять props с названием document, имя зарезервировано
+        return inertia('Documents/Edit', compact('document_edit'));
     }
 
     /**
@@ -64,7 +71,33 @@ class DocumentController extends Controller
      */
     public function update(Request $request, Document $document)
     {
-        //
+        //dd();
+
+        $document = Document::find($document->id);
+        $document->name = $request->name;
+
+        if($request->file('file')){
+
+            $file = $request->file('file');
+            $file_name = $file->getClientOriginalName();
+            $extension = $file->getClientOriginalExtension();
+            $size = $file->getSize();
+            $path = $file->store('documents');
+
+            $document->file = $path;
+            $document->file_name = $file_name;
+            $document->extension = $extension;
+            $document->size = $size;
+
+            $previous_file_path = $document->file;
+            $previous_file_delete = Storage::disk('public')->delete($previous_file_path);
+
+        }
+
+        $document->save();
+
+        return redirect()->route('documents.index')->with('message', 'Документ обновлен');
+
     }
 
     /**
@@ -72,7 +105,7 @@ class DocumentController extends Controller
      */
     public function destroy(Document $document)
     {
-        if(Storage::disk('public')->delete($download->path)){
+        if(Storage::disk('public')->delete($document->file)){
 
             return redirect()->route('documents.index')->with('message', 'Документ удален');
 
