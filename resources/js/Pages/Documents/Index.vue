@@ -1,10 +1,26 @@
 <script setup>
-    import { Link } from "@inertiajs/vue3";
-    import { Head } from "@inertiajs/vue3";
+import {Link, router} from "@inertiajs/vue3";
+import { Head } from "@inertiajs/vue3";
 
-    defineProps({
+    const props = defineProps({
         documents: Object,
+        message: String,
     })
+
+    const destroy = (id) => {
+        if (confirm("Вы точно хотите удалить?")) {
+            router.delete(route("documents.destroy", id));
+        }
+    }
+
+    /*function submit(id) {
+        alert(1);
+        router.post(`/documents/${id}`, {
+            _method: 'destroy',
+           // name: form.name,
+            //file: form.file
+        })
+    }*/
 
 </script>
 
@@ -34,7 +50,7 @@
                 <td class="border border-gray-300 px-6 py-4">{{ document.file_name }}</td>
                 <td class="border border-gray-300 px-6 py-4">
                     <Link :href="route('documents.edit', document.id)" class="mx-1 px-3 py-2 bg-orange-500 hover:bg-orange-700 cursor-pointer text-md" >Изменить</Link>
-                    <Link :href="route('documents.destroy', document.id)" class="mx-1 px-3 py-2 bg-red-500 hover:bg-red-700 cursor-pointer text-md" >Удалить</Link>
+                    <button @click="destroy(document.id)" class="mx-1 px-3 py-2 bg-red-500 hover:bg-red-700 cursor-pointer text-md">Удалить</button>
                     <a :href="'download/'+ document.id" class="mx-1 px-3 py-2 bg-red-500 hover:bg-red-700 cursor-pointer text-md">Скачать</a>
                 </td>
             </tr>

@@ -71,7 +71,7 @@ class DocumentController extends Controller
      */
     public function update(Request $request, Document $document)
     {
-        //dd();
+        //dd($request->name);
 
         $document = Document::find($document->id);
         $document->name = $request->name;
@@ -84,13 +84,13 @@ class DocumentController extends Controller
             $size = $file->getSize();
             $path = $file->store('documents');
 
+            $previous_file_path = $document->file;
+            Storage::disk('public')->delete($previous_file_path);
+
             $document->file = $path;
             $document->file_name = $file_name;
             $document->extension = $extension;
             $document->size = $size;
-
-            $previous_file_path = $document->file;
-            $previous_file_delete = Storage::disk('public')->delete($previous_file_path);
 
         }
 
@@ -105,13 +105,19 @@ class DocumentController extends Controller
      */
     public function destroy(Document $document)
     {
-        if(Storage::disk('public')->delete($document->file)){
 
-            return redirect()->route('documents.index')->with('message', 'Документ удален');
+        //dd($document);
 
-        }else{
+        $file_delete = Storage::disk('public')->delete($document->file);
+        $document_delete = $document->delete();
 
-            return redirect()->route('documents.index')->with('message', 'Документ не может быть удален');
+        if($file_delete && $document_delete){
+
+            return redirect()->route('documents.index')->with('message', 'Документ с файлом удален');
+
+        }elseif($document_delete){
+
+            return redirect()->route('documents.index')->with('message', 'Документ удален, а файл не может быть удален');
 
         }
     }

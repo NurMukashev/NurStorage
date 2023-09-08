@@ -21,7 +21,8 @@ function submit() {
     //form.put(route("/documents", props.document_edit.id) //так не получилось
     //form.put('/documents'+ props.document_edit.id) //и так не получилось
 
-    router.put(`/documents/${props.document_edit.id}`, {
+    router.post(`/documents/${props.document_edit.id}`, {
+        _method: 'put',
         name: form.name,
         file: form.file
     })
