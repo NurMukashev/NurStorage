@@ -40,7 +40,7 @@ class DocumentController extends Controller
 
         Document::create([
             'name' => $request->name,
-            'file' => $path,
+            'path' => $path,
             'file_name' => $file_name,
             'extension' => $extension,
             'size' => $size
@@ -84,10 +84,10 @@ class DocumentController extends Controller
             $size = $file->getSize();
             $path = $file->store('documents');
 
-            $previous_file_path = $document->file;
+            $previous_file_path = $document->path;
             Storage::disk('public')->delete($previous_file_path);
 
-            $document->file = $path;
+            $document->path = $path;
             $document->file_name = $file_name;
             $document->extension = $extension;
             $document->size = $size;

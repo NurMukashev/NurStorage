@@ -12,7 +12,7 @@ class DownloadController extends Controller
 
     public function download($id){
         $uploaded = DB::table('documents')->where('id', $id)->first();
-        $pathToFile = $uploaded->file;
+        $pathToFile = $uploaded->path;
         return Response::download(public_path('storage/'.$pathToFile));
 
         /*if(Storage::disk('public')->exists("documents/$request->file")){
