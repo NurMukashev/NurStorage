@@ -6,6 +6,7 @@ use App\Http\Requests\DocumentRequest;
 use App\Models\Document;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Facades\Image;
 
 class DocumentController extends Controller
 {
@@ -38,12 +39,22 @@ class DocumentController extends Controller
         $size = $file->getSize();
         $path = $file->store('documents');
 
+        if(substr($file->getMimeType(), 0, 5) == 'image'){
+
+            $crop_image = Image::make($file)->resize(100, 100);
+            $crop_path = 'cropped/'.time().'-'.$file_name;
+
+            $crop_image->save('storage/'.$crop_path, 70, 'jpg');
+
+        }
+
         Document::create([
             'name' => $request->name,
-            'path' => $path,
             'file_name' => $file_name,
             'extension' => $extension,
-            'size' => $size
+            'size' => $size,
+            'path' => $path,
+            'crop_path' => $crop_path,
         ]);
 
         return redirect()->route('documents.index')->with('message', "Документ добавлен");
@@ -84,13 +95,30 @@ class DocumentController extends Controller
             $size = $file->getSize();
             $path = $file->store('documents');
 
+            //Удаляю предыдущие файлы
             $previous_file_path = $document->path;
             Storage::disk('public')->delete($previous_file_path);
+
+            $previous_crop_path = $document->crop_path;
+            if($previous_crop_path){
+                Storage::delete($previous_crop_path);
+            }
 
             $document->path = $path;
             $document->file_name = $file_name;
             $document->extension = $extension;
             $document->size = $size;
+
+            if(substr($file->getMimeType(), 0, 5) == 'image'){
+
+                $crop_image = Image::make($file)->resize(100, 100);
+                $crop_path = 'cropped/'.time().'-'.$file_name;
+
+                $crop_image->save($crop_path, 70, 'jpg');
+
+                $document->crop_path = $crop_path;
+
+            }
 
         }
 
@@ -105,10 +133,12 @@ class DocumentController extends Controller
      */
     public function destroy(Document $document)
     {
+        $file_delete = Storage::disk('public')->delete($document->path);
+        $crop_path_for_delete = $document->crop_path;
+        if($crop_path_for_delete) {
+            Storage::delete($crop_path_for_delete);
+        }
 
-        //dd($document);
-
-        $file_delete = Storage::disk('public')->delete($document->file);
         $document_delete = $document->delete();
 
         if($file_delete && $document_delete){

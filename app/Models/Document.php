@@ -11,5 +11,5 @@ class Document extends Model
 
     protected $table = 'documents';
 
-    protected $fillable = ['name', 'file_name', 'extension', 'size', 'path'];
+    protected $fillable = ['name', 'file_name', 'extension', 'size', 'path', 'crop_path'];
 }
