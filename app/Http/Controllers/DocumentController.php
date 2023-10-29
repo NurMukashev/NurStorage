@@ -15,7 +15,13 @@ class DocumentController extends Controller
      */
     public function index()
     {
-        $documents = Document::all();
+        $documents = Document::paginate(5)->through(fn($document) => [
+            'id' => $document->id,
+            'name' => $document->name,
+            'file_name' => $document->file_name,
+            'extension' => $document->extension,
+            'crop_path' => $document->crop_path,
+        ]);
 
         return inertia('Documents/Index', compact('documents'));
     }
@@ -57,7 +63,7 @@ class DocumentController extends Controller
             'crop_path' => $crop_path,
         ]);
 
-        return redirect()->route('documents.index')->with('message', "Документ добавлен");
+        return to_route('documents.index')->with('message', "Документ добавлен");
     }
 
     /**
@@ -124,7 +130,7 @@ class DocumentController extends Controller
 
         $document->save();
 
-        return redirect()->route('documents.index')->with('message', 'Документ обновлен');
+        return to_route('documents.index')->with('message', 'Документ обновлен');
 
     }
 
@@ -143,11 +149,11 @@ class DocumentController extends Controller
 
         if($file_delete && $document_delete){
 
-            return redirect()->route('documents.index')->with('message', 'Документ с файлом удален');
+            return to_route('documents.index')->with('message', 'Документ с файлом удален');
 
         }elseif($document_delete){
 
-            return redirect()->route('documents.index')->with('message', 'Документ удален, а файл не может быть удален');
+            return to_route('documents.index')->with('message', 'Документ удален, а файл не может быть удален');
 
         }
     }

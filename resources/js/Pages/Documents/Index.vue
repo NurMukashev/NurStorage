@@ -25,7 +25,7 @@ import { Head } from "@inertiajs/vue3";
         </div>
         <div v-if="message" class="text-green-600">{{ message }}</div>
         <div class="w-3/4 mx-auto text-right mb-4">
-            <p class="mb-2">Общее количество записей: {{ documents.length }}</p>
+            <p class="mb-2">Общее количество записей: {{ documents.total }}</p>
             <Link :href="route('documents.create')" class="px-4 py-2 bg-orange-500 hover:bg-orange-700 cursor-pointer text-md font-bold">Создать файл</Link>
         </div>
         <table class="w-3/4 mx-auto text-md table-auto border border-gray-300">
@@ -38,7 +38,7 @@ import { Head } from "@inertiajs/vue3";
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="document in documents">
+                <tr v-for="document in documents.data">
                     <td class="border border-gray-300 px-6 py-4">{{ document.name }}</td>
                     <td class="border border-gray-300 px-6 py-4">{{ document.file_name }}</td>
                     <td class="border border-gray-300 px-6 py-4  text-center">
@@ -55,6 +55,20 @@ import { Head } from "@inertiajs/vue3";
                 </tr>
             </tbody>
         </table>
+
+        <div class="w-3/4 mx-auto my-6 text-center">
+            <template v-for="link in documents.links">
+                <Link
+                    v-if="link.url"
+                    :href="link.url"
+                    v-html="link.label"
+                    class="px-1"
+                    :class="{'font-bold' : link.active }"
+                />
+                <span v-else v-html="link.label" class="text-gray-500 px-1"></span>
+            </template>
+        </div>
+
     </main>
 
 </template>
