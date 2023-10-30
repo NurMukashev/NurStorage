@@ -1,11 +1,21 @@
 <script setup>
-import {Link, router} from "@inertiajs/vue3";
-import { Head } from "@inertiajs/vue3";
+import {Link, router, Head} from "@inertiajs/vue3";
+import {ref, watch} from "vue";
 
     const props = defineProps({
         documents: Object,
         message: String,
+        filters: Object,
     })
+
+    let search = ref(props.filters.search);
+
+    watch(search, value => {
+        router.get('/documents', { search: value }, {
+            preserveState: true,
+            replace: true
+        });
+    });
 
     const destroy = (id) => {
         if (confirm("Вы точно хотите удалить?")) {
@@ -24,9 +34,12 @@ import { Head } from "@inertiajs/vue3";
             <h2 class="text-xl text-center font-bold">Документы (Файлы)</h2>
         </div>
         <div v-if="message" class="text-green-600">{{ message }}</div>
-        <div class="w-3/4 mx-auto text-right mb-4">
-            <p class="mb-2">Общее количество записей: {{ documents.total }}</p>
-            <Link :href="route('documents.create')" class="px-4 py-2 bg-orange-500 hover:bg-orange-700 cursor-pointer text-md font-bold">Создать файл</Link>
+        <div class="w-3/4 mx-auto flex justify-between mb-4">
+            <p class="font-bold">Общее количество записей: {{ documents.total }}</p>
+            <div>
+                <input v-model="search" type="text" placeholder="поиск по названию" class="mr-3">
+                <Link :href="route('documents.create')" class="px-4 py-3 bg-orange-500 hover:bg-orange-700 cursor-pointer text-md font-bold">Создать файл</Link>
+            </div>
         </div>
         <table class="w-3/4 mx-auto text-md table-auto border border-gray-300">
             <thead class="bg-orange-300">

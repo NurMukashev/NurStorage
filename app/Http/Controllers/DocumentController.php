@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\DocumentRequest;
 use App\Models\Document;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
 use Intervention\Image\Facades\Image;
 
 class DocumentController extends Controller
@@ -15,15 +16,23 @@ class DocumentController extends Controller
      */
     public function index()
     {
-        $documents = Document::paginate(5)->through(fn($document) => [
-            'id' => $document->id,
-            'name' => $document->name,
-            'file_name' => $document->file_name,
-            'extension' => $document->extension,
-            'crop_path' => $document->crop_path,
-        ]);
 
-        return inertia('Documents/Index', compact('documents'));
+        return Inertia::render('Documents/Index', [
+            'documents' => Document::query()
+                ->when(Request::input('search'), function($query, $search){
+                    $query->where('name', 'like', "%{$search}%");
+                })
+                ->paginate(5)
+                ->withQueryString()
+                ->through(fn($document) => [
+                    'id' => $document->id,
+                    'name' => $document->name,
+                    'file_name' => $document->file_name,
+                    'extension' => $document->extension,
+                    'crop_path' => $document->crop_path,
+                ]),
+            'filters' => Request::only(['search'])
+        ]);
     }
 
     /**
